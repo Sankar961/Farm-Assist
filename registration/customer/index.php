@@ -1,3 +1,31 @@
+<?php
+require("connection.php");
+if(isset($_POST['submit']))
+{
+ $emailid=$_POST['emailid'];	
+ $first_name=$_POST['first_name'];
+ $last_name=$_POST['last_name'];
+ $phoneno=$_POST['phoneno'];
+ $housename=$_POST['housename'];
+ $city=$_POST['city'];
+ $state=$_POST['state'];
+ $pincode=$_POST['pincode'];
+ $landmark=$_POST['landmark'];
+ date_default_timezone_set('Asia/Kolkata');
+ $created_at  = date('Y-m-d H:i:s', time());
+ $b="insert into customer_register(emailid,first_name,last_name,phoneno,housename,city,state,pincode,landmark,created_at) 
+      values('".$emailid."','".$first_name."','".$last_name."','".$phoneno."','".$housename."','".$city."','".$state."','".$pincode."','".$landmark."', '$created_at')";
+ $insert=mysqli_query($a,$b);
+if($insert)
+  {
+	  echo"<br>inserted sucessfully";
+  }
+ else
+ {
+  echo "There was an error creating the record: " . mysqli_error($a);
+ }
+}
+?>
 
 
 
