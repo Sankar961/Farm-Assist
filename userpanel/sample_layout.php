@@ -1,6 +1,6 @@
 <?php
-    session_start();
-    /*if (!$_SESSION['logged_in'])
+    /*session_start();
+    if (!$_SESSION['logged_in'])
     {
         header('Location: http://localhost/FARMASSIST');
 
@@ -14,7 +14,6 @@
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 <?php include('./includes/body.html'); ?>
-<!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
       <!-- Content Header (Page header) -->
       <div class="content-header">
@@ -36,7 +35,14 @@
       <div style="padding-left: 30px;">
     <!-- Main content Add your contents here -->
     
-    
+
+  Please add your necessary data here.
+
+
+
+
+
+
 
     <!-- /.content -->
     <?php include('./includes/footer.html'); ?>
