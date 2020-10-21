@@ -1,4 +1,45 @@
 <?php
+    //start a session
+    session_start();
+    //include the dB connection 
+    require($_SERVER["DOCUMENT_ROOT"]."/FARMASSIST/connection.php");
+    //Cheks whether the submit button is clicked
+    if (isset($_POST["submit"]) && !empty($_POST))
+    {
+        //Collect all the datas entered by the user into variables.
+        $emailid = filter_var($_POST['emailid'], FILTER_SANITIZE_EMAIL);	
+        $image = filter_var($_POST['image'], FILTER_SANITIZE_STRING);
+        $name = filter_var($_POST['name'], FILTER_SANITIZE_STRING);
+        $description = filter_var($_POST['description'], FILTER_SANITIZE_STRING);
+        $price = $_POST['price'];
+        $payment = filter_var($_POST['payment'], FILTER_SANITIZE_STRING);
+		$quantity = filter_var($_POST['quantity'], FILTER_SANITIZE_STRING);
+		date_default_timezone_set('Asia/Kolkata');
+        $created_at  = date('Y-m-d H:i:s', time());
+        $starts_at = date('Y-m-d H:i:s', time());
+        $ends_at = date('Y-m-d H:i:s', time());
+
+        
+            $data = [
+                'emailid' => $emailid,
+                'image' => $image,
+                'name' => $name,
+                'description' => $description,
+                'price' => $price,
+                'payment' => $payment,
+                'quantity' => $quantity,
+                'created_at' => $created_at
+            ];
+            $sql = 'INSERT INTO post_list(emailid, image, name, description, price, payment, quantity, created_at) VALUES (:emailid, :image, :name, :description, :price, :payment, :quantity, :created_at)';
+            $stmt = $pdo -> prepare($sql);
+            $stmt -> execute($data);
+            $count = $stmt -> rowCount();
+            
+    }
+?>
+
+
+<?php
     /*session_start();
     if (!$_SESSION['logged_in'])
     {
@@ -59,7 +100,49 @@
 					</div>
 					<form method="post">
 						<div class="form-group row">
-							<label class="col-sm-12 col-md-2 col-form-label">Text Box</label>
+							<label class="col-sm-12 col-md-2 col-form-label">Email id</label>
+							<div class="col-sm-12 col-md-10">
+								<input class="form-control" type="text" name="name" required="">
+							</div>
+						</div>
+
+						<div class="form-group row">
+							<label class="col-sm-12 col-md-2 col-form-label">Image</label>
+							<div class="col-sm-12 col-md-10">
+								<input class="form-control" type="file" name="file upload" accept="image">
+							</div>
+						</div>
+
+						<div class="form-group row">
+							<label class="col-sm-12 col-md-2 col-form-label">Name</label>
+							<div class="col-sm-12 col-md-10">
+								<input class="form-control" type="text" name="name" required="">
+							</div>
+						</div>
+
+						<div class="form-group row">
+							<label class="col-sm-12 col-md-2 col-form-label">Description</label>
+							<div class="col-sm-12 col-md-10">
+								<input class="form-control" type="text" name="name" required="">
+							</div>
+						</div>
+
+						<div class="form-group row">
+							<label class="col-sm-12 col-md-2 col-form-label">Price</label>
+							<div class="col-sm-12 col-md-10">
+								<input class="form-control" type="text" name="name" required="">
+							</div>
+						</div>
+
+						<div class="form-group row">
+							<label class="col-sm-12 col-md-2 col-form-label">Payment</label>
+							<div class="col-sm-12 col-md-10">
+								<input class="form-control" type="text" name="name" required="">
+							</div>
+						</div>
+
+						<div class="form-group row">
+							<label class="col-sm-12 col-md-2 col-form-label">Quantity</label>
 							<div class="col-sm-12 col-md-10">
 								<input class="form-control" type="text" name="name" required="">
 							</div>
