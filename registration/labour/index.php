@@ -18,7 +18,7 @@
         $state = filter_var($_POST['state'], FILTER_SANITIZE_STRING);
         $pincode = $_POST['pincode'];
         $wages = $_POST['wages'];
-        $specialization = $_POST['specialization'];
+        $specialization = filter_var($_POST['specialization'], FILTER_SANITIZE_STRING);
         $password = md5($_POST['password']);
         date_default_timezone_set('Asia/Kolkata');
         $created_at  = date('Y-m-d H:i:s', time());
@@ -53,7 +53,7 @@
                 'specialization' => $specialization,
                 'created_at' => $created_at
             ];
-            $sql = 'INSERT INTO labour_register(emailid, first_name, last_name, phoneno, aadharno, housename, city, state, pincode, wages, specialization, created_at) VALUES (:emailid, :first_name, :last_name, :phoneno, :aadharno, :housename, :city, :state, :pincode, :wages, :specialization :created_at)';
+            $sql = 'INSERT INTO labour_register(emailid, first_name, last_name, phoneno, aadharno, housename, city, state, pincode, wages, specialization, created_at) VALUES (:emailid, :first_name, :last_name, :phoneno, :aadharno, :housename, :city, :state, :pincode, :wages, :specialization, :created_at)';
             $stmt = $pdo -> prepare($sql);
             $stmt -> execute($data);
             $count = $stmt -> rowCount();
