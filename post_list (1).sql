@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 23, 2020 at 10:02 AM
+-- Generation Time: Oct 23, 2020 at 11:51 AM
 -- Server version: 10.4.13-MariaDB
 -- PHP Version: 7.4.8
 
@@ -30,17 +30,22 @@ SET time_zone = "+00:00";
 CREATE TABLE `post_list` (
   `post_id` varchar(20) NOT NULL,
   `emailid` varchar(50) NOT NULL,
-  `image` varchar(50) NOT NULL,
+  `image` int(50) NOT NULL DEFAULT 0,
   `name` varchar(50) NOT NULL,
-  `description` text NOT NULL,
-  `price` float NOT NULL,
+  `description` varchar(250) NOT NULL,
+  `price` varchar(10) NOT NULL,
   `payment` varchar(50) NOT NULL,
-  `status` varchar(50) NOT NULL,
+  `status` int(50) NOT NULL,
   `created_at` datetime DEFAULT NULL,
-  `starts_at` datetime DEFAULT NULL,
-  `ends_at` datetime DEFAULT NULL,
   `quantity` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `post_list`
+--
+
+INSERT INTO `post_list` (`post_id`, `emailid`, `image`, `name`, `description`, `price`, `payment`, `status`, `created_at`, `quantity`) VALUES
+('UB196459', 'ajaycmohanan@gmail.com', 1, 'Ajay', 'Student', '23.99', 'Cash', 1, '2020-10-23 15:19:36', '100Kg');
 
 --
 -- Indexes for dumped tables
