@@ -1,52 +1,102 @@
 <?php
     //start a session
-    session_start();
-    //include the dB connection 
-    require($_SERVER["DOCUMENT_ROOT"]."/FARMASSIST/connection.php");
-    //Cheks whether the submit button is clicked
-    if (isset($_POST["submit"]) && !empty($_POST))
-    {
-        //Collect all the datas entered by the user into variables.
-        $emailid = filter_var($_POST['emailid'], FILTER_SANITIZE_EMAIL);	
-        $image = filter_var($_POST['image'], FILTER_SANITIZE_STRING);
-        $name = filter_var($_POST['name'], FILTER_SANITIZE_STRING);
-        $description = filter_var($_POST['description'], FILTER_SANITIZE_STRING);
-        $price = $_POST['price'];
-        $payment = filter_var($_POST['payment'], FILTER_SANITIZE_STRING);
-		$quantity = filter_var($_POST['quantity'], FILTER_SANITIZE_STRING);
-		date_default_timezone_set('Asia/Kolkata');
-        $created_at  = date('Y-m-d H:i:s', time());
-        $starts_at = date('Y-m-d H:i:s', time());
-        $ends_at = date('Y-m-d H:i:s', time());
-
-        
-            $data = [
-                'emailid' => $emailid,
-                'image' => $image,
-                'name' => $name,
-                'description' => $description,
-                'price' => $price,
-                'payment' => $payment,
-                'quantity' => $quantity,
-                'created_at' => $created_at
-            ];
-            $sql = 'INSERT INTO post_list(emailid, image, name, description, price, payment, quantity, created_at) VALUES (:emailid, :image, :name, :description, :price, :payment, :quantity, :created_at)';
-            $stmt = $pdo -> prepare($sql);
-            $stmt -> execute($data);
-            $count = $stmt -> rowCount();
-            
-    }
-?>
-
-
-<?php
-    /*session_start();
-    if (!$_SESSION['logged_in'])
+	session_start();
+    /*if (!$_SESSION['logged_in'])
     {
         header('Location: http://localhost/FARMASSIST');
 
     }*/
+    //include the dB connection 
+	require($_SERVER["DOCUMENT_ROOT"]."/FARMASSIST/connection.php");
+	//function to Generate Random String like XX00000000
+    function random_num($size) {
+        $alpha_key = '';
+        $keys = range('A', 'Z');
 
+        for ($i = 0; $i < 2; $i++) {
+            $alpha_key .= $keys[array_rand($keys)];
+        }
+
+        $length = $size - 2;
+
+        $key = '';
+        $keys = range(0, 9);
+
+        for ($i = 0; $i < $length; $i++) {
+            $key .= $keys[array_rand($keys)];
+        }
+
+        return $alpha_key . $key;
+    }
+    //Cheks whether the submit button is clicked
+    if (isset($_POST["addpost"]) && !empty($_POST))
+    {
+		$postid = random_num(8);
+		$userid = $_SESSION['emailid'];
+		$emailid = $userid;
+        //Collect all the datas entered by the user into variables.
+        $name = filter_var($_POST['name'], FILTER_SANITIZE_STRING);
+        $description = filter_var($_POST['description'], FILTER_SANITIZE_STRING);
+        $price = number_format($_POST['price'], 2);
+        $payment = filter_var($_POST['payment'], FILTER_SANITIZE_STRING);
+		$quantity = filter_var($_POST['quantity'], FILTER_SANITIZE_STRING);
+		date_default_timezone_set('Asia/Kolkata');
+        $created_at  = date('Y-m-d H:i:s', time());
+		
+		//Image file upload
+		$file = $_FILES['photo'];
+        $fileName = $file['name'];
+        $fileTmpName = $file['tmp_name'];
+        $fileSize = $file['size'];
+        $fileError = $file['error'];
+        $fileType = $file['type'];
+
+        $fileExt = explode('.', $fileName);
+        $fileActualExt = strtolower(end($fileExt));
+
+        $allowed = array('jpg', 'jpeg', 'png');
+
+        if (in_array($fileActualExt, $allowed) ) {
+        	if ($fileError === 0) {
+        		if ($fileSize < 1000000) {
+        			$fileNameNew = "profile".$userid.".".$fileActualExt;
+        			$fileDestination = 'uploads/'.$fileNameNew;
+        			if(move_uploaded_file($fileTmpName, $fileDestination)) {
+						//$_SESSION['errmsg'] = "Your file has been successfully uploaded.";
+						$data = [
+							'post_id' => $postid,
+							'emailid' => $emailid,
+							'image' => 1,
+							'name' => $name,
+							'description' => $description,
+							'price' => $price,
+							'payment' => $payment,
+							'status' => 1,
+							'created_at' => $created_at,
+							'quantity' => $quantity
+						];
+						var_dump($data);
+						$sql = 'INSERT INTO post_list (post_id, emailid, image, name, description, price, payment, status, created_at, quantity) 
+								VALUES (:post_id, :emailid, :image, :name, :description, :price, :payment, :status, :created_at, :quantity)';
+						$stmt = $pdo -> prepare($sql);
+						$stmt -> execute($data);
+						$count = $stmt -> rowCount();
+						if($count > 0){
+							$_SESSION['succmsg'] = "Post Added";
+						} else {
+							$_SESSION['errmsg'] = "Ooops! Something went wrong. Try again later.";
+						}
+        			}
+        		} else {
+        			$_SESSION['errmsg'] = "Your file is too big!";
+        		}
+        	} else {
+        		$_SESSION['errmsg'] = "There was an error in uploading your file!";
+        	}
+        } else {
+        	$_SESSION['errmsg'] = "You Cannot upload files of this type!";
+        }
+    }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -81,7 +131,7 @@
 						<div class="pull-left">
 							<h4 class="text-blue"></h4><br>
 						</div>
-						<div>
+						<div class="col-sm-12 col-md-3">
 							<?php
 							    if (!empty($_SESSION['errmsg'])) {
 							        echo '<div class="alert alert-danger alert-dismissible"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>';
@@ -98,71 +148,58 @@
 							?>
 						</div>
 					</div>
-					<form method="post">
-						<div class="form-group row">
-							<label class="col-sm-12 col-md-2 col-form-label">Email id</label>
-							<div class="col-sm-12 col-md-10">
-								<input class="form-control" type="text" name="name" required="">
-							</div>
-						</div>
+					<form method="post" enctype="multipart/form-data">
 
 						<div class="form-group row">
 							<label class="col-sm-12 col-md-2 col-form-label">Image</label>
-							<div class="col-sm-12 col-md-10">
-								<input class="form-control" type="file" name="file upload" accept="image">
+							<div class="col-sm-12 col-md-3">
+								<input class="form-control" type="file" name="photo">
 							</div>
 						</div>
 
 						<div class="form-group row">
 							<label class="col-sm-12 col-md-2 col-form-label">Name</label>
-							<div class="col-sm-12 col-md-10">
+							<div class="col-sm-12 col-md-3">
 								<input class="form-control" type="text" name="name" required="">
 							</div>
 						</div>
 
 						<div class="form-group row">
 							<label class="col-sm-12 col-md-2 col-form-label">Description</label>
-							<div class="col-sm-12 col-md-10">
-								<input class="form-control" type="text" name="name" required="">
+							<div class="col-sm-12 col-md-3">
+								<textarea name="description" id="" cols="38" rows="5"></textarea>
 							</div>
 						</div>
 
 						<div class="form-group row">
 							<label class="col-sm-12 col-md-2 col-form-label">Price</label>
-							<div class="col-sm-12 col-md-10">
-								<input class="form-control" type="text" name="name" required="">
+							<div class="col-sm-12 col-md-3">
+								<input class="form-control" type="text" name="price" required="">
 							</div>
 						</div>
 
 						<div class="form-group row">
-							<label class="col-sm-12 col-md-2 col-form-label">Payment</label>
-							<div class="col-sm-12 col-md-10">
-								<input class="form-control" type="text" name="name" required="">
+							<label class="col-sm-12 col-md-2 col-form-label">Payment Method</label>
+							<div class="col-sm-12 col-md-3">
+								<input class="form-control" type="text" name="payment" required="">
 							</div>
 						</div>
 
 						<div class="form-group row">
 							<label class="col-sm-12 col-md-2 col-form-label">Quantity</label>
-							<div class="col-sm-12 col-md-10">
-								<input class="form-control" type="text" name="name" required="">
+							<div class="col-sm-12 col-md-3">
+								<input class="form-control" type="text" name="quantity" required="">
 							</div>
 						</div>
 						
 						<div class="form-group">
-							<div class="col-sm-12 col-md-10">
-								<button class="btn btn-info btn-lg" type="submit" name="membership">Add POST</button>
+							<div class="col-sm-12 col-md-3">
+								<button class="btn btn-info btn-lg" type="submit" name="addpost">Add POST</button>
 							</div>
 						</div>
 					</form>
 				</div>
 							</div>
-  
-
-
-
-
-
-
     <!-- /.content -->
     <?php include('./includes/footer.html'); ?>
 </body>
