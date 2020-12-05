@@ -23,7 +23,7 @@
 			$row = $stmt -> fetch();
 			$account_type = $row['account_type'];
           //Set SESSION Variables
-            $_SESSION['emailid'] = $username;
+            $_SESSION['emailid'] = $emailid;
             $_SESSION['acctype'] = $acctype;
             $_SESSION['logged_in'] = true;
             if ($account_type == 0){
