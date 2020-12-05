@@ -59,14 +59,14 @@
         if (in_array($fileActualExt, $allowed) ) {
         	if ($fileError === 0) {
         		if ($fileSize < 1000000) {
-        			$fileNameNew = "profile".$userid.".".$fileActualExt;
+        			$fileNameNew = "post".$userid.".".$fileActualExt;
         			$fileDestination = 'uploads/'.$fileNameNew;
         			if(move_uploaded_file($fileTmpName, $fileDestination)) {
 						//$_SESSION['errmsg'] = "Your file has been successfully uploaded.";
 						$data = [
 							'post_id' => $postid,
 							'emailid' => $emailid,
-							'image' => 1,
+							'image' => $fileNameNew,
 							'name' => $name,
 							'description' => $description,
 							'price' => $price,
@@ -75,7 +75,7 @@
 							'created_at' => $created_at,
 							'quantity' => $quantity
 						];
-						var_dump($data);
+						//var_dump($data);
 						$sql = 'INSERT INTO post_list (post_id, emailid, image, name, description, price, payment, status, created_at, quantity) 
 								VALUES (:post_id, :emailid, :image, :name, :description, :price, :payment, :status, :created_at, :quantity)';
 						$stmt = $pdo -> prepare($sql);
